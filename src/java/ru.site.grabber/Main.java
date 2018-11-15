@@ -15,11 +15,12 @@ public class Main {
         SiteGrabService service = new SiteGrabServiceImpl();
         List<String> links = new ArrayList<>();
         links.add("http://www.amokb.ru/");
+
         List<Site> sites = service.createRootSite(links);
 
         List<Site> childs = service.getUrl(sites, 1);
         for (int i = 2; i < 5; i++) {
-            childs = service.getUrl(childs, 2);
+            childs = service.getUrl(childs, i);
         }
 
     }
