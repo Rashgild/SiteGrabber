@@ -72,12 +72,12 @@ public class SiteGrabServiceImpl implements SiteGrabService {
                         }
                     }
                 }
-            } /*catch (HttpStatusException e){
-                //System.out.println("Ссылка вернула статус 404");
+            } catch (HttpStatusException e){
+                System.out.println("Ссылка вернула статус 404");
             } catch (UnsupportedMimeTypeException e){
                 System.out.println("Похоже, тут нет html");
-            }*/ catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                //e.printStackTrace();
             }
         }
         return childSites;
