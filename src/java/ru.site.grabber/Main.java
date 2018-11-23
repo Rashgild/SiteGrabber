@@ -16,30 +16,36 @@ public class Main {
         List<String> links = new ArrayList<>();
         links.add("http://www.amokb.ru/");
         links.add("http://www.astu.org/");
+        links.add("http://government.ru/");
         List<Site> sites = service.createRootSite(links);
-
+        int i = 0;
         for (Site site : sites) {
-            System.out.println("url =" + site.getSiteUrl());
-            Threader thread = new Threader(site);    //Создание потока
+            Threader thread = new Threader(site,i);    //Создание потока
             thread.start();
+            System.out.println("url ="+ site.getSiteUrl()+" thread "+i+" start");
+            i++;
         }
     }
 
     static class Threader extends Thread {
         SiteGrabService service = new SiteGrabServiceImpl();
         Site mySite;
+        int thnum;
 
-        Threader(Site site) {
+        Threader(Site site, int threadNumber) {
             mySite = site;
+            thnum = threadNumber;
         }
 
         @Override
         public void run()    //Этот метод будет выполнен в побочном потоке
         {
-            List<Site> childs = service.getUrlMultithread(mySite, 1);
+            List<Site> childs = null;
+            childs = service.getUrlMultithread(mySite, 1,thnum);
             for (int i = 2; i < 5; i++) {
-                childs = service.getUrl(childs, i);
+                childs = service.getUrl(childs, i,thnum);
             }
+            System.out.println(thnum+") thread end");
         }
     }
 }

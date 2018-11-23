@@ -8,4 +8,6 @@ public interface SiteGrabDao {
     void save(Site site);
 
     Boolean isHave(String link);
+
+    void update(Site site);
 }
