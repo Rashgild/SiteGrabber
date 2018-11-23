@@ -19,10 +19,11 @@ public class SiteGrabServiceImpl implements SiteGrabService {
     @Override
     public List<Site> createRootSite(List<String> urls) {
         SiteGrabDao dao = new SiteGrabDaoImpl();
-        Site site = new Site();
+
         List<Site> rootSites = new ArrayList<>();
         try {
             for (String url : urls) {
+                Site site = new Site();
                 Document doc = Jsoup.connect(url).get();
                 site.setSiteHtml(doc.toString());
                 site.setSiteUrl(url);
@@ -45,7 +46,6 @@ public class SiteGrabServiceImpl implements SiteGrabService {
         List<Site> childSites = new ArrayList<>();
 
         for (Site site : sites) {
-
             try {
                 Document doc = Jsoup.connect(site.getSiteUrl()).get();
 
@@ -72,12 +72,12 @@ public class SiteGrabServiceImpl implements SiteGrabService {
                         }
                     }
                 }
-            } catch (HttpStatusException e){
-                System.out.println("Ссылка вернула статус 404");
+            } /*catch (HttpStatusException e){
+                //System.out.println("Ссылка вернула статус 404");
             } catch (UnsupportedMimeTypeException e){
                 System.out.println("Похоже, тут нет html");
-            } catch (Exception e) {
-                //e.printStackTrace();
+            }*/ catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return childSites;

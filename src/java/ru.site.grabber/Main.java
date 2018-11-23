@@ -15,7 +15,12 @@ public class Main {
         SiteGrabService service = new SiteGrabServiceImpl();
         List<String> links = new ArrayList<>();
         links.add("http://www.amokb.ru/");
+        links.add("http://www.astu.org/");
         List<Site> sites = service.createRootSite(links);
+
+        for(Site site: sites){
+            System.out.println("url ="+ site.getSiteUrl());
+        }
 
         List<Site> childs = service.getUrl(sites, 1);
         for (int i = 2; i < 5; i++) {
