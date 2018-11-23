@@ -1,6 +1,5 @@
 package ru.site.grabber;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -16,10 +15,9 @@ public class HibernateSessionFactory {
                 .configure()
                 .build();
         try {
-            sessionFactory = new MetadataSources( registry ).buildMetadata().buildSessionFactory();
-        }
-        catch (Exception e) {
-            StandardServiceRegistryBuilder.destroy( registry );
+            sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        } catch (Exception e) {
+            StandardServiceRegistryBuilder.destroy(registry);
             throw new ExceptionInInitializerError("Initial SessionFactory failed " + e);
         }
         return sessionFactory;
@@ -32,6 +30,7 @@ public class HibernateSessionFactory {
     public static Session getCurrentSession() {
         return getSessionFactory().getCurrentSession();
     }
+
     public static void shutdown() {
         getCurrentSession().close();
     }

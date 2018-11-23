@@ -24,7 +24,7 @@ public class Main {
 
         List<Site> childs = service.getUrl(sites, 1);
         for (int i = 2; i < 5; i++) {
-            childs = service.getUrl(childs, 2);
+            childs = service.getUrl(childs, i);
         }
 
     }
