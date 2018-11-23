@@ -72,14 +72,56 @@ public class SiteGrabServiceImpl implements SiteGrabService {
                         }
                     }
                 }
-            } catch (HttpStatusException e){
+            } catch (HttpStatusException e) {
                 System.out.println("Ссылка вернула статус 404");
-            } catch (UnsupportedMimeTypeException e){
+            } catch (UnsupportedMimeTypeException e) {
                 System.out.println("Похоже, тут нет html");
             } catch (Exception e) {
                 //e.printStackTrace();
             }
         }
+        return childSites;
+    }
+
+
+    @Override
+    public List<Site> getUrlMultithread(Site site, int iteration) {
+
+        SiteGrabDao dao = new SiteGrabDaoImpl();
+        List<Site> childSites = new ArrayList<>();
+        try {
+            Document doc = Jsoup.connect(site.getSiteUrl()).get();
+            Element body = doc.body();
+            Elements urls = null;
+            if (body != null) {
+                urls = body.getElementsByTag("a");
+            }
+
+            for (Element el : urls) {
+                if (el.attr("href").contains("http") || el.attr("href").contains("https")) {
+
+                    String url = el.attr("href");
+                    if (!dao.isHave(url)) {
+                        System.out.println(url);
+                        Site childSite = new Site();
+                        childSite.setParent(site);
+                        childSite.setSiteUrl(url);
+                        Document doc2 = Jsoup.connect(childSite.getSiteUrl()).get();
+                        childSite.setSiteHtml(doc2.toString());
+                        childSite.setIteration(iteration);
+                        dao.save(childSite);
+                        childSites.add(childSite);
+                    }
+                }
+            }
+        } catch (HttpStatusException e) {
+            System.out.println("Ссылка вернула статус 404");
+        } catch (UnsupportedMimeTypeException e) {
+            System.out.println("Похоже, тут нет html");
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+
         return childSites;
     }
 }
