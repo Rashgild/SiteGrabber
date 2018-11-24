@@ -43,25 +43,25 @@ public class SiteGrabServiceImpl implements SiteGrabService {
     }
 
     @Override
-    public List<Site> getUrl(List<Site> sites, int iteration, int thNum) {
-        List<Site> childSites = new ArrayList<>();
-        for (Site site : sites) {
-            childSites.addAll(getUrlMultithread(site, iteration, thNum));
+    public List<Site> getUrl(List<Site> parents, int iteration, int thNum) {
+        List<Site> childs = new ArrayList<>();
+        for (Site parent : parents) {
+            childs.addAll(getUrlMultithread(parent, iteration, thNum));
         }
-        return childSites;
+        return childs;
     }
 
     @Override
-    public List<Site> getUrlMultithread(Site site, int iteration, int thNum) {
-        List<Site> childSites = parseUrls(iteration, site, thNum);
+    public List<Site> getUrlMultithread(Site parent, int iteration, int thNum) {
+        List<Site> childSites = parseUrls(iteration, parent, thNum);
         return childSites;
     }
 
-    private List<Site> parseUrls(int iteration, Site site, int thNum) {
+    private List<Site> parseUrls(int iteration, Site parent, int thNum) {
         SiteGrabDao dao = new SiteGrabDaoImpl();
         List<Site> childSites = new ArrayList<>();
         try {
-            Document doc = Jsoup.connect(site.getSiteUrl()).get();
+            Document doc = Jsoup.connect(parent.getSiteUrl()).get();
             Element body = doc.body();
             Elements urls = null;
             if (body != null) {
@@ -74,12 +74,11 @@ public class SiteGrabServiceImpl implements SiteGrabService {
                     if (!dao.isHave(url)) {
                         System.out.println(thNum + ") " + url);
                         Site childSite = new Site();
-                        childSite.setParent(site);
+                        childSite.setParent(parent);
                         childSite.setSiteUrl(url);
                         Document doc2 = Jsoup.connect(childSite.getSiteUrl()).get();
                         childSite.setSiteHtml(doc2.toString());
                         childSite.setIteration(iteration);
-                        dao.save(childSite);
                         childSites.add(childSite);
                     }
                 }
@@ -87,16 +86,18 @@ public class SiteGrabServiceImpl implements SiteGrabService {
         } catch (UnknownHostException | SocketTimeoutException | HttpStatusException | ConnectException e) {
             System.out.println(thNum + ") Ссылка вернула статус 404");
         } catch (UnsupportedMimeTypeException e) {
-            System.out.println(thNum + ") Похоже, тут нет html");  //SSLHandshakeException
+            System.out.println(thNum + ") Похоже, тут нет html");
         } catch (SSLHandshakeException e) {
-            System.out.println(thNum + ") Проблемы с ssl");  //SSLHandshakeException
+            System.out.println(thNum + ") Проблемы с ssl");
         } catch (IllegalArgumentException e) {
-            System.out.println(thNum + ") Плохой линк");  //SSLHandshakeException
+            System.out.println(thNum + ") Плохой линк");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        site.setComplete(true);
-        dao.update(site);
+
+        parent.setComplete(true);
+        dao.update(parent);
+        dao.saveList(childSites);
         return childSites;
     }
 }

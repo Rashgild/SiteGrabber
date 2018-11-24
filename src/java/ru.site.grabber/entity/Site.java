@@ -14,7 +14,7 @@ public class Site {
     @Column(name = "id")
     private Integer id;
 
-    @NotNull
+    @Basic
     @Column(name = "siteUrl", length = 1000)
     private String siteUrl;
 

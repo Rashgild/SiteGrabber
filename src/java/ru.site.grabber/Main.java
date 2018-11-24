@@ -20,32 +20,32 @@ public class Main {
         List<Site> sites = service.createRootSite(links);
         int i = 0;
         for (Site site : sites) {
-            Threader thread = new Threader(site,i);    //Создание потока
+            Threader thread = new Threader(site, i);    //Создание потока
             thread.start();
-            System.out.println("url ="+ site.getSiteUrl()+" thread "+i+" start");
+            System.out.println("url =" + site.getSiteUrl() + " thread " + i + " start");
             i++;
         }
     }
 
     static class Threader extends Thread {
         SiteGrabService service = new SiteGrabServiceImpl();
-        Site mySite;
-        int thnum;
+        Site parent;
+        int thrNumber;
 
         Threader(Site site, int threadNumber) {
-            mySite = site;
-            thnum = threadNumber;
+            parent = site;
+            thrNumber = threadNumber;
         }
 
         @Override
         public void run()    //Этот метод будет выполнен в побочном потоке
         {
             List<Site> childs = null;
-            childs = service.getUrlMultithread(mySite, 1,thnum);
+            childs = service.getUrlMultithread(parent, 1, thrNumber);
             for (int i = 2; i < 5; i++) {
-                childs = service.getUrl(childs, i,thnum);
+                childs = service.getUrl(childs, i, thrNumber);
             }
-            System.out.println(thnum+") thread end");
+            System.out.println(thrNumber + ") thread end");
         }
     }
 }
